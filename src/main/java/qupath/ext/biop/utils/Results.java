@@ -7,6 +7,7 @@ import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+import qupath.lib.projects.Project;
 import qupath.lib.projects.ProjectImageEntry;
 import qupath.lib.projects.Projects;
 import qupath.lib.scripting.QP;
@@ -20,6 +21,7 @@ import java.util.List;
 
 /**
  * Convenience class to export results only for the selected objects.
+ *
  * @author Olivier Burri
  */
 
@@ -129,5 +131,56 @@ public class Results {
         // This line creates all the measurements
         ob.setImageData(QP.getCurrentImageData(), pathObjects);
         return ob;
+    }
+
+    /**
+     * Conveniently add a bunch of metadata to each entry in the project
+     *
+     * @param project The project to update
+     * @param csvFile the CSV file that will be opened by ImageJ's ResultsTable
+     * @throws IOException in case the project cannot be refreshed
+     */
+    public static void addMetadataToProject(Project<BufferedImage> project, File csvFile) throws IOException {
+        // Open the file
+        ResultsTable metadata = ResultsTable.open(csvFile.getAbsolutePath());
+        if (!metadata.columnExists("Image Name")) {
+            logger.error("No Column 'Image Name' in csv file {}. Make sure that the column exists and that it matches the name of the entries in your QuPath Project", csvFile.getName());
+            return;
+        }
+
+        logger.error("Available Columns: {}", metadata.getColumnHeadings());
+
+        List<ProjectImageEntry<BufferedImage>> images = project.getImageList();
+
+        images.forEach(image -> {
+            String name = image.getImageName();
+            logger.info("Processing {}", name);
+
+            // Check all metadata keys to add to this image
+            for (int i = 0; i < metadata.getCounter(); i++) {
+                String metadataImageName = metadata.getStringValue("Image Name", i);
+                if (name.contains(metadataImageName)) {
+                    // Append all columns
+                    for (int c = 0; c <= metadata.getLastColumn(); c++) {
+                        // Excluse columns withoug names or the Image Name Column
+                        if (metadata.getColumnHeading(c) != "" && metadata.getColumnHeading(c) != "Image Name") {
+                            String key = metadata.getColumnHeading(c);
+                            String value = metadata.getStringValue(c, i);
+                            // If the value is empty, then do not add it
+                            if (!value.equals(""))
+                                image.putMetadataValue(key, value);
+                        }
+                    }
+                }
+            }
+        });
+
+        try {
+            logger.info("Syncing project changes");
+            project.syncChanges();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

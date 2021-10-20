@@ -21,8 +21,8 @@ import qupath.lib.scripting.QP;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathObjects {
-    private final static Logger logger = LoggerFactory.getLogger(PathObjects.class);
+public class PathUtils {
+    private final static Logger logger = LoggerFactory.getLogger(PathUtils.class);
 
     /**
      * returns a rectangle with teh whole dataset as an annotation. It does not add it to the Hierarchy
