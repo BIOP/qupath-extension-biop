@@ -34,7 +34,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
     }
 
     @Override
-    public Version getVersion() { return Version.parse("1.0.1");
+    public Version getVersion() { return Version.parse("1.0.2");
     }
 
     @Override
