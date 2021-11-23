@@ -10,6 +10,7 @@ import qupath.lib.images.servers.ImageServer;
 import qupath.lib.objects.PathAnnotationObject;
 import qupath.lib.objects.PathDetectionObject;
 import qupath.lib.objects.PathObject;
+import qupath.lib.objects.PathObjects;
 import qupath.lib.plugins.objects.DilateAnnotationPlugin;
 import qupath.lib.regions.ImagePlane;
 import qupath.lib.roi.GeometryTools;
@@ -25,7 +26,7 @@ public class PathUtils {
     private final static Logger logger = LoggerFactory.getLogger(PathUtils.class);
 
     /**
-     * returns a rectangle with teh whole dataset as an annotation. It does not add it to the Hierarchy
+     * returns a rectangle with the whole dataset as an annotation. It does not add it to the Hierarchy
      *
      * @return an Annotation Object with the whole image
      */
@@ -34,7 +35,7 @@ public class PathUtils {
         if (imageData == null)
             return null;
         ImageServer<?> server = imageData.getServer();
-        return qupath.lib.objects.PathObjects.createAnnotationObject(ROIs.createRectangleROI(0, 0, server.getWidth(), server.getHeight(), null));
+        return PathObjects.createAnnotationObject(ROIs.createRectangleROI(0, 0, server.getWidth(), server.getHeight(), null));
     }
 
     /**
@@ -45,21 +46,10 @@ public class PathUtils {
      */
     public static double getAreaMicrons(PathObject object) {
         double pixel_size = QP.getCurrentServer().getPixelCalibration().getAveragedPixelSizeMicrons();
-        double area = getArea(object);
+        double area = object.getROI().getArea();
         return area * pixel_size * pixel_size;
     }
 
-
-    /**
-     * returns the area of the current PathObject in pixels If the area is not defined (like points) it returns 0
-     *
-     * @param object the object to try and compute the area from
-     * @return the area in px2
-     */
-    public static double getArea(PathObject object) {
-        ROI roi = object.getROI();
-        return roi.getArea();
-    }
 
     /**
      * expand, taken from {@link DilateAnnotationPlugin} which returns an PathObject expanded or dilated by the given amount in pixels

@@ -1,7 +1,6 @@
 package qupath.ext.biop;
 
 import org.controlsfx.control.action.Action;
-import qupath.ext.biop.atlas.allen.commands.LoadAtlasRoisToQuPathCommand;
 import qupath.ext.biop.commands.ApplyDisplaySettingsCommand;
 import qupath.lib.common.Version;
 import qupath.lib.gui.ActionTools;
@@ -14,8 +13,6 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
     @Override
     public void installExtension(QuPathGUI qupath) {
         qupath.installActions(ActionTools.getAnnotatedActions(new DisplayCommands(qupath)));
-        qupath.installActions(ActionTools.getAnnotatedActions(new ABBACommands(qupath)));
-
     }
 
     @Override
@@ -53,19 +50,6 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
 
         private DisplayCommands(QuPathGUI qupath) {
             actionApplyDisplay = qupath.createProjectAction(project -> new ApplyDisplaySettingsCommand(qupath).run());
-        }
-    }
-
-    /**
-     * Install the commands from ABBA
-     */
-    public static class ABBACommands {
-        @ActionTools.ActionMenu("BIOP>Atlas>Load Atlas Annotations into Open Image")
-        @ActionTools.ActionDescription("Commands for Allen Brain Atlas Communication")
-        public final Action actionABBA;
-
-        private ABBACommands(QuPathGUI qupath) {
-            actionABBA = qupath.createImageDataAction(project -> new LoadAtlasRoisToQuPathCommand(qupath).run());
         }
     }
 }

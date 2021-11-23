@@ -68,6 +68,11 @@ java {
         withJavadocJar()
 }
 
+javadoc {
+    options.addBooleanOption('html5', true)
+    destinationDir = new File(project.rootDir,"docs")
+}
+
 /*
  * Create javadocs for all modules/packages in one place.
  * Use -PstrictJavadoc=true to fail on error with doclint (which is rather strict).

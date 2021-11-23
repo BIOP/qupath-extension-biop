@@ -148,7 +148,7 @@ public class Results {
             return;
         }
 
-        logger.error("Available Columns: {}", metadata.getColumnHeadings());
+        logger.info("Available Columns: {}", metadata.getColumnHeadings());
 
         List<ProjectImageEntry<BufferedImage>> images = project.getImageList();
 
