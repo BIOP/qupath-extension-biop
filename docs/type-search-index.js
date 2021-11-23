@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"qupath.ext.biop.commands","l":"ApplyDisplaySettingsCommand"},{"p":"qupath.ext.biop","l":"BIOPExtension"},{"p":"qupath.ext.biop","l":"BIOPExtension.DisplayCommands"},{"p":"qupath.ext.biop.utils","l":"PathUtils"},{"p":"qupath.ext.biop.utils","l":"Results"}]
