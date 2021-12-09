@@ -5,15 +5,18 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qupath.lib.geom.Point2;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.objects.PathAnnotationObject;
 import qupath.lib.objects.PathDetectionObject;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.PathObjects;
+import qupath.lib.objects.classes.PathClass;
 import qupath.lib.plugins.objects.DilateAnnotationPlugin;
 import qupath.lib.regions.ImagePlane;
 import qupath.lib.roi.GeometryTools;
+import qupath.lib.roi.PolygonROI;
 import qupath.lib.roi.ROIs;
 import qupath.lib.roi.RoiTools;
 import qupath.lib.roi.interfaces.ROI;
@@ -21,6 +24,7 @@ import qupath.lib.scripting.QP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PathUtils {
     private final static Logger logger = LoggerFactory.getLogger(PathUtils.class);
@@ -79,7 +83,7 @@ public class PathUtils {
             if (parent == null || parent.getROI() == null) {
                 PathObject annotation = getFullImageAnnotation();
 
-                if(annotation != null) {
+                if (annotation != null) {
                     ROI bounds = annotation.getROI();
                     parentShape = ROIs.createRectangleROI(bounds.getBoundsX(), bounds.getBoundsY(), bounds.getBoundsWidth(), bounds.getBoundsHeight(), ImagePlane.getPlane(roi)).getGeometry();
                 }
@@ -162,6 +166,58 @@ public class PathUtils {
         pathObjectNew.setColorRGB(pathObjects.get(0).getColorRGB());
 
         return pathObjectNew;
+    }
+
+    /**
+     * Creates a series of detections as pie chart elements that are added to the provided parent object
+     * @param name the name of the pie chart, for the measurements
+     * @param elements a map of PathClass &gt; Double that contains the class and value for each piece of the chart
+     * @param parent to which ROI to attach this chart
+     * @return the individual quadrants that make up the chart if you need to modify them further
+     */
+    public static List<PathDetectionObject> makePieChart(String name, Map<PathClass, Double> elements, PathObject parent) {
+        double x = parent.getROI().getBoundsX();
+        double y = parent.getROI().getBoundsY();
+        double w = parent.getROI().getBoundsWidth();
+        double h = parent.getROI().getBoundsHeight();
+        double radius = Math.min(w, h) * 0.25;
+        double xc = x + (w / 2);
+        double yc = y + (h / 2);
+
+        double total = elements.values().stream().mapToDouble(Double::doubleValue).sum();
+        double lastAngle = 0;
+        double stepSize = Math.PI / 200;
+
+        List<PathDetectionObject> chart = new ArrayList<>(elements.size());
+
+        for (PathClass key : elements.keySet()) {
+            double value = elements.get(key);
+            double fraction = value / total * 2 * Math.PI;
+            double nSteps = Math.floor(fraction / stepSize);
+            List<Point2> points = new ArrayList<>();
+            points.add(new Point2(xc, yc));
+            // Make Hemicircle
+            for (int i = 0; i < nSteps; i++) {
+                double px = radius * Math.cos(i * stepSize + lastAngle) + xc;
+                double py = -radius * Math.sin(i * stepSize + lastAngle) + yc;
+                points.add(new Point2(px, py));
+            }
+            // Add last point
+            points.add(new Point2(radius * Math.cos(fraction + lastAngle) + xc, -radius * Math.sin(fraction + lastAngle) + yc));
+
+            lastAngle += fraction;
+
+            points.add(new Point2(xc, yc));
+            PolygonROI theROI = ROIs.createPolygonROI(points, parent.getROI().getImagePlane());
+            PathDetectionObject quadrant = (PathDetectionObject) PathObjects.createDetectionObject(theROI, key);
+            quadrant.setName(key.getName());
+            parent.getMeasurementList().addMeasurement("Chart " + name + ": " + key, value);
+            parent.getMeasurementList().addMeasurement("Chart " + name + ": " + key + " %", value / total * 100);
+            parent.addPathObject(quadrant);
+            chart.add(quadrant);
+
+        }
+        return chart;
     }
 
 }
