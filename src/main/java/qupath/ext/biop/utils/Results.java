@@ -140,12 +140,13 @@ public class Results {
      * @param csvFile the CSV file that will be opened by ImageJ's ResultsTable
      * @throws IOException in case the project cannot be refreshed
      */
-    public static void addMetadataToProject(Project<BufferedImage> project, File csvFile) throws IOException {
+    public static ResultsTable addMetadataToProject(Project<BufferedImage> project, File csvFile) throws IOException {
         // Open the file
         ResultsTable metadata = ResultsTable.open(csvFile.getAbsolutePath());
+        metadata.show("Imported Data");
         if (!metadata.columnExists("Image Name")) {
             logger.error("No Column 'Image Name' in csv file {}. Make sure that the column exists and that it matches the name of the entries in your QuPath Project", csvFile.getName());
-            return;
+            return null;
         }
 
         logger.info("Available Columns: {}", metadata.getColumnHeadings());
@@ -162,7 +163,7 @@ public class Results {
                 if (name.contains(metadataImageName)) {
                     // Append all columns
                     for (int c = 0; c <= metadata.getLastColumn(); c++) {
-                        // Excluse columns withoug names or the Image Name Column
+                        // Exclude columns without names or the Image Name Column
                         if (metadata.getColumnHeading(c) != "" && metadata.getColumnHeading(c) != "Image Name") {
                             String key = metadata.getColumnHeading(c);
                             String value = metadata.getStringValue(c, i);
@@ -182,5 +183,6 @@ public class Results {
             e.printStackTrace();
         }
 
+        return metadata;
     }
 }
