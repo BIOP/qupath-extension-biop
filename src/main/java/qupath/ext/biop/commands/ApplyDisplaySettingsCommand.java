@@ -5,15 +5,18 @@ import org.slf4j.LoggerFactory;
 import qupath.lib.display.ChannelDisplayInfo;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.commands.ProjectCommands;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.scripting.QPEx;
 import qupath.lib.gui.viewer.QuPathViewerPlus;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
+import qupath.lib.projects.ProjectIO;
 import qupath.lib.projects.ProjectImageEntry;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -27,7 +30,9 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
     //ApplyDisplaySettingsCommand
     public ApplyDisplaySettingsCommand(final QuPathGUI qupath) {
-        if (!Dialogs.showConfirmDialog("Apply Brightness And Contrast", "Apply current display settings to all images?\n\nWill apply on images with the same image type and number of channels."))
+        String text = "Apply current channel names, colors and ranges to all images?\n(Will apply on images with the same image type and number of channels)";
+        text += "\nNOTE: this will only work if you also change the channel names!";
+        if (!Dialogs.showConfirmDialog("Apply Display Settings to Project", text))
             return;
         this.qupath = qupath;
 
@@ -60,14 +65,14 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
         AtomicInteger nImages = new AtomicInteger();
         AtomicInteger nIgnored = new AtomicInteger();
-        imageList.forEach(entry -> {
+        imageList.stream().parallel().forEach(entry -> {
             try {
                 ImageData<BufferedImage> imageData = entry.readImageData();
 
                 ImageServer<BufferedImage> server = entry.getServerBuilder().build();
 
-                logger.debug("Ref Type: {} vs Current Type {}", currentImageData.getImageType(), imageData.getImageType());
-                logger.debug("Ref nC: {} vs Current nC {}", currentServer.getMetadata().getSizeC(), server.getMetadata().getSizeC());
+                //logger.debug("Ref Type: {} vs Current Type {}", currentImageData.getImageType(), imageData.getImageType());
+                //logger.debug("Ref nC: {} vs Current nC {}", currentServer.getMetadata().getSizeC(), server.getMetadata().getSizeC());
 
                 if (currentImageData.getImageType().equals(imageData.getImageType()) && currentServer.getMetadata().getSizeC() == server.getMetadata().getSizeC()) {
                     nImages.getAndIncrement();
@@ -77,7 +82,15 @@ public class ApplyDisplaySettingsCommand implements Runnable {
                     for (int i = 0; i < channel_min.size(); i++) {
                         QPEx.setChannelDisplayRange(imageData, channel_names.get(i), channel_min.get(i), channel_max.get(i));
                     }
+
+                    // Update the thumbnail
+                    BufferedImage thumbnail = ProjectCommands.getThumbnailRGB(imageData.getServer());
+                    entry.setThumbnail(thumbnail);
                     entry.saveImageData(imageData);
+
+
+                    logger.info("Image {} updated.", entry.getImageName());
+
                 } else {
                     int i = nIgnored.getAndIncrement();
                 }
@@ -86,6 +99,12 @@ public class ApplyDisplaySettingsCommand implements Runnable {
             }
         });
 
-        Dialogs.showConfirmDialog("Applied settings to "+nImages.get(), ""+nIgnored.get()+" images were ignored due to either wrong image type or channel number");
+        try {
+            qupath.getProject().syncChanges();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Dialogs.showConfirmDialog("Applied settings to "+nImages.get() +" images", ""+nIgnored.get()+" images were ignored due to either wrong image type or channel number");
     }
 }
