@@ -2,8 +2,6 @@ plugins {
     id 'java-library'
     // To create a shadow/fat jar, including dependencies
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    // To manage included native libraries
-    id 'org.bytedeco.gradle-javacpp-platform' version '1.5.6'
 }
 
 repositories {
@@ -81,6 +79,20 @@ def strictJavadoc = findProperty('strictJavadoc')
 if (!strictJavadoc) {
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+jar {
+    // Important to set version so this can be queried within QuPath
+    manifest {
+        def manifestAttributes = [
+                "Implementation-Vendor": "QuPath developers",
+                "Implementation-Version": project.version,
+                //               'Automatic-Module-Name': "io.github." + moduleName,
+                "QuPath-build-time": new Date().format("yyyy-MM-dd, HH:mm")
+        ]
+
+        attributes(manifestAttributes)
     }
 }
 

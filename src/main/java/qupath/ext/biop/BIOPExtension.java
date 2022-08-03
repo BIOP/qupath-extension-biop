@@ -31,10 +31,6 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
     }
 
     @Override
-    public Version getVersion() { return Version.parse("1.0.3");
-    }
-
-    @Override
     public GitHubRepo getRepository() {
         return GitHubRepo.create("BIOP QuPath Extension", "biop", "qupath-extension-biop");
     }
