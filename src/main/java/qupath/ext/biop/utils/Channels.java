@@ -21,10 +21,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Channels class to handle loading and saving channel settings
+ * It can modify channels based on either a simple text file or a string of the type
+ * position, name, color, minDisplay, maxDisplay
+ * eg.
+ * <pre>1, First, #0300ff, 0, 100
+ * 3, Third, #ff3300, 10, 1200</pre>
+ *
+ * Also includes the possibility to save the settings to a textfile in the above format.
+ *
+ * @author Olivier Burri
+ */
 public class Channels {
 
     private static final Logger logger = LoggerFactory.getLogger(Channels.class);
 
+    /**
+     * Set the channels directly from a text file
+     * @param settingsFile the file containing the channel settings, generally produced using {@link Channels#writeChannelSettings(List, File)}
+     */
     public static void setChannelSettings(File settingsFile) {
         try {
             List<Channel> settings = readChannelSettings(settingsFile);
@@ -34,7 +50,10 @@ public class Channels {
         }
     }
 
-    // Heavy Lifter that sets everything
+    /**
+     * This method actually sets the channel displays based on the channels list.
+     * @param channels the list of channels, created with {@link Channels#readChannelSettings(File)}, {@link Channels#getCurrentChannelSettings()} or {@link Channels#readChannelSettings(String)}
+     */
     public static void setChannelSettings(List<Channel> channels) {
         ImageData<BufferedImage> imageData = QuPathGUI.getInstance().getImageData();
 
@@ -69,7 +88,11 @@ public class Channels {
         viewer.repaintEntireImage();
     }
 
-    // Parse the current display settings to a list of Channel objects
+    /**
+     * Return the current channel names, colors and minMax displays to a list
+     * NOTE: Channels that are not currently selected will not be sent
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     */
     public static List<Channel> getCurrentChannelSettings() {
         // This will only work and do things on fluorescent data
         ImageData<BufferedImage> imageData = QuPathGUI.getInstance().getImageData();
@@ -97,6 +120,15 @@ public class Channels {
         return channels;
     }
 
+    /**
+     * Read the parameters of a simple string with each line formatted as:
+     * position, name, color, minDisplay, maxDisplay
+     * eg.
+     * <pre>1, One channel, #0300ff, 0, 100
+     * 3, Another channel, #ff3300, 10, 1200</pre>
+     * @param settingsString a manually created String
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     */
     public static List<Channel> readChannelSettings(String settingsString) {
         List<Channel> channels = new ArrayList<>();
         String[] settings = settingsString.split("\n");
@@ -108,8 +140,13 @@ public class Channels {
         return channels;
     }
 
-    // Read a (very simple) file that contains multiline entries for each channel
-    // 1, "Nuclei", "#ee00ff", 10, 50
+    /**
+     * Read the settings from a simple text file, generally made using {@link Channels#writeChannelSettings(List, File)}
+     * but could also be made manually
+     * @param settingsFile the file with the settings.
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     * @throws FileNotFoundException in case the file does not exist
+     */
     public static List<Channel> readChannelSettings(File settingsFile) throws FileNotFoundException {
         List<Channel> channels = new ArrayList<>();
 
@@ -128,7 +165,12 @@ public class Channels {
         }
     }
 
-    // Write all channel settings to a file, which could be reused later
+    /**
+     * Write the provided Channels to a file
+      * @param channelSettings settings, obtained using {@link Channels#readChannelSettings(String)}, {@link Channels#readChannelSettings(File)} or {@link Channels#getCurrentChannelSettings()}
+     * @param settingsFile a file that will be created or overwritten with the settings converted to text.
+     * @throws IOException in case the file cannot be written
+     */
     public static void writeChannelSettings(List<Channel> channelSettings, File settingsFile) throws IOException {
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(settingsFile))) {
@@ -140,6 +182,9 @@ public class Channels {
         }
     }
 
+    /**
+     * Private Channel class that handles converting to and from text
+     */
     private static class Channel {
         int position;
         String name;
@@ -186,7 +231,7 @@ public class Channels {
         }
 
         // Convert a text or hex color to a QuPath color
-        public int getQuPathColor() {
+        private int getQuPathColor() {
             Color c;
             try {
                 // get color by hex or octal value
