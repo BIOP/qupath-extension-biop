@@ -24,7 +24,7 @@ ext.moduleName = 'qupath.extension.biop'
 
 description = 'QuPath extension containing utilitiy functions by the BIOP'
 
-version = "1.1.0"
+version = "2.0.0"
 
 dependencies {
     def qupathVersion = "0.4.1" // For now
