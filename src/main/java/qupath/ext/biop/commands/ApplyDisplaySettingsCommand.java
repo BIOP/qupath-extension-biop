@@ -18,8 +18,10 @@ import qupath.lib.projects.ProjectImageEntry;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApplyDisplaySettingsCommand implements Runnable {
 
@@ -76,8 +78,11 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
                 if (currentImageData.getImageType().equals(imageData.getImageType()) && currentServer.getMetadata().getSizeC() == server.getMetadata().getSizeC()) {
                     nImages.getAndIncrement();
-                    QPEx.setChannelColors(imageData, channel_colors.toArray(new Integer[0]));
+
+                    // Set the names
                     QPEx.setChannelNames(imageData, channel_names.toArray(new String[0]));
+
+                    QPEx.setChannelColors(imageData, channel_colors.toArray(new Integer[0]));
 
                     for (int i = 0; i < channel_min.size(); i++) {
                         QPEx.setChannelDisplayRange(imageData, channel_names.get(i), channel_min.get(i), channel_max.get(i));

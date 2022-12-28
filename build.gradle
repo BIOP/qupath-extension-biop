@@ -22,12 +22,12 @@ repositories {
 
 ext.moduleName = 'qupath.extension.biop'
 
-description = 'QuPath extension containing utilitiy functions by the BIOP, Including the ABBA Bridge between QuPath and Fiji'
+description = 'QuPath extension containing utilitiy functions by the BIOP'
 
 version = "1.1.0"
 
 dependencies {
-    def qupathVersion = "0.3.2" // For now
+    def qupathVersion = "0.4.1" // For now
 
     shadow "io.github.qupath:qupath-gui-fx:${qupathVersion}"
     shadow "org.slf4j:slf4j-api:1.7.30"

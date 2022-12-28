@@ -123,7 +123,7 @@ public class PathUtils {
         }
 
         newObject.setName(pathObject.getName());
-        newObject.setColorRGB(pathObject.getColorRGB());
+        newObject.setColor(pathObject.getColor());
 
         return newObject;
 
@@ -163,7 +163,7 @@ public class PathUtils {
         }
 
         pathObjectNew.setPathClass(pathObjects.get(0).getPathClass());
-        pathObjectNew.setColorRGB(pathObjects.get(0).getColorRGB());
+        pathObjectNew.setColor(pathObjects.get(0).getColor());
 
         return pathObjectNew;
     }
@@ -211,9 +211,9 @@ public class PathUtils {
             PolygonROI theROI = ROIs.createPolygonROI(points, parent.getROI().getImagePlane());
             PathDetectionObject quadrant = (PathDetectionObject) PathObjects.createDetectionObject(theROI, key);
             quadrant.setName(key.getName());
-            parent.getMeasurementList().addMeasurement("Chart " + name + ": " + key, value);
-            parent.getMeasurementList().addMeasurement("Chart " + name + ": " + key + " %", value / total * 100);
-            parent.addPathObject(quadrant);
+            parent.getMeasurementList().put("Chart " + name + ": " + key, value);
+            parent.getMeasurementList().put("Chart " + name + ": " + key + " %", value / total * 100);
+            parent.addChildObject(quadrant);
             chart.add(quadrant);
             parent.setLocked(true);
 
