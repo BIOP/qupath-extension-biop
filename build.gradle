@@ -1,8 +1,8 @@
 plugins {
     id 'java-library'
-    // To create a shadow/fat jar, including dependencies
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
 }
+
 
 repositories {
     // Use this only for local development!
@@ -21,21 +21,16 @@ repositories {
 }
 
 ext.moduleName = 'qupath.extension.biop'
+ext.qupathVersion = gradle.ext.qupathVersion
 
 description = 'QuPath extension containing utilitiy functions by the BIOP'
 
 version = "2.0.0"
 
 dependencies {
-    def qupathVersion = "0.4.1" // For now
 
-    shadow "io.github.qupath:qupath-gui-fx:${qupathVersion}"
-    shadow "org.slf4j:slf4j-api:1.7.30"
-    implementation 'net.imglib2:imglib2-realtransform:3.1.1'
-    implementation 'com.google.code.gson:gson:2.8.8'
-
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation "io.github.qupath:qupath-gui-fx:${qupathVersion}"
+    implementation libs.bundles.logging
 
 }
 
@@ -86,7 +81,7 @@ jar {
     // Important to set version so this can be queried within QuPath
     manifest {
         def manifestAttributes = [
-                "Implementation-Vendor": "QuPath developers",
+                "Implementation-Vendor": "BIOP developers",
                 "Implementation-Version": project.version,
                 //               'Automatic-Module-Name': "io.github." + moduleName,
                 "QuPath-build-time": new Date().format("yyyy-MM-dd, HH:mm")
