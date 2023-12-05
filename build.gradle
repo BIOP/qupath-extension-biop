@@ -1,8 +1,9 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-}
+    alias(libs.plugins.javafx)
 
+}
 
 repositories {
     // Use this only for local development!
@@ -25,11 +26,12 @@ ext.qupathVersion = gradle.ext.qupathVersion
 
 description = 'QuPath extension containing utilitiy functions by the BIOP'
 
-version = "2.0.0"
+version = "3.0.0"
 
 dependencies {
 
     implementation "io.github.qupath:qupath-gui-fx:${qupathVersion}"
+    implementation libs.qupath.fxtras
     implementation libs.bundles.logging
 
 }
@@ -49,11 +51,11 @@ tasks.register("copyDependencies", Copy) {
 }
 
 /*
- * Ensure Java 11 compatibility
+ * Ensure Java 17 compatibility
  */
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
     if (project.properties['sources'])
         withSourcesJar()
@@ -78,16 +80,10 @@ if (!strictJavadoc) {
 }
 
 jar {
-    // Important to set version so this can be queried within QuPath
     manifest {
-        def manifestAttributes = [
-                "Implementation-Vendor": "BIOP developers",
-                "Implementation-Version": project.version,
-                //               'Automatic-Module-Name': "io.github." + moduleName,
-                "QuPath-build-time": new Date().format("yyyy-MM-dd, HH:mm")
-        ]
-
-        attributes(manifestAttributes)
+        attributes("Implementation-Title": project.name,
+                "Implementation-Version": archiveVersion,
+                "Automatic-Module-Name": "io.github." + moduleName)
     }
 }
 
@@ -101,4 +97,36 @@ tasks.withType(org.gradle.jvm.tasks.Jar) {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "SciJava"
+            def releasesRepoUrl = uri("https://maven.scijava.org/content/repositories/releases")
+            def snapshotsRepoUrl = uri("https://maven.scijava.org/content/repositories/snapshots")
+            // Use gradle -Prelease publish
+            url = project.hasProperty('release') ? releasesRepoUrl : snapshotsRepoUrl
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'ch.epfl.biop'
+            from components.java
+
+            pom {
+                licenses {
+                    license {
+                        name = 'Apache License v2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
+                    }
+                }
+            }
+        }
+    }
 }

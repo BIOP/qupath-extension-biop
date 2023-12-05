@@ -2,26 +2,23 @@ package qupath.ext.biop.commands;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qupath.fx.dialogs.Dialogs;
 import qupath.lib.display.ChannelDisplayInfo;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.commands.ProjectCommands;
-import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.scripting.QPEx;
-import qupath.lib.gui.viewer.QuPathViewerPlus;
+import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
-import qupath.lib.projects.ProjectIO;
 import qupath.lib.projects.ProjectImageEntry;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ApplyDisplaySettingsCommand implements Runnable {
 
@@ -32,15 +29,18 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
     //ApplyDisplaySettingsCommand
     public ApplyDisplaySettingsCommand(final QuPathGUI qupath) {
-        String text = "Apply current channel names, colors and ranges to all images?\n(Will apply on images with the same image type and number of channels)";
-        text += "\nNOTE: this will only work if you also change the channel names!";
-        if (!Dialogs.showConfirmDialog("Apply Display Settings to Project", text))
-            return;
+
         this.qupath = qupath;
 
     }
 
     public void run() {
+
+        String text = "Apply current channel names, colors and ranges to all images?\n(Will apply on images with the same image type and number of channels)";
+        text += "\nNOTE: this will only work if you also change the channel names!";
+        if (!Dialogs.showConfirmDialog("Apply Display Settings to Project", text))
+            return;
+
         ImageData<BufferedImage> currentImageData = qupath.getImageData();
 
         ImageServer<BufferedImage> currentServer = currentImageData.getServer();
@@ -50,11 +50,21 @@ public class ApplyDisplaySettingsCommand implements Runnable {
         List<String> channel_names = channels.stream().map(ImageChannel::getName).collect(Collectors.toList());
 
         // Try to get an existing display if the image is currently open
-        QuPathViewerPlus viewer = qupath.getViewers().stream()
+        QuPathViewer viewer = qupath.getAllViewers().stream()
                 .filter(v -> v.getImageData() == currentImageData)
                 .findFirst()
                 .orElse(null);
-        ImageDisplay display = viewer == null ? new ImageDisplay(currentImageData) : viewer.getImageDisplay();
+        ImageDisplay display = null;
+        if( viewer == null) {
+            display = new ImageDisplay();
+            try {
+                display.setImageData(currentImageData, false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            viewer.getImageDisplay();
+        }
         var available = display.availableChannels();
 
         List<Float> channel_min = available.stream().map(ChannelDisplayInfo::getMinDisplay).collect(Collectors.toList());

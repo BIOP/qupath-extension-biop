@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import qupath.lib.display.ChannelDisplayInfo;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.scripting.QPEx;
+import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.gui.viewer.QuPathViewerPlus;
 import qupath.lib.images.ImageData;
 
@@ -75,7 +76,7 @@ public class Channels {
         channels.stream().forEach(c -> QPEx.setChannelDisplayRange(c.position - 1, c.displayMin, c.displayMax));
 
         // Set visibility... Though this is only for the current display
-        QuPathViewerPlus viewer = QuPathGUI.getInstance().getViewer();
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
         ObservableList<ChannelDisplayInfo> availableChannels = viewer.getImageDisplay().availableChannels();
 
         AtomicInteger position = new AtomicInteger(1);
@@ -98,7 +99,7 @@ public class Channels {
         ImageData<BufferedImage> imageData = QuPathGUI.getInstance().getImageData();
         if (!imageData.isFluorescence()) return Collections.emptyList();
 
-        QuPathViewerPlus viewer = QuPathGUI.getInstance().getViewer();
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
         ObservableList<ChannelDisplayInfo> availableChannels = viewer.getImageDisplay().availableChannels();
         ObservableList<ChannelDisplayInfo> selectedChannels = viewer.getImageDisplay().selectedChannels();
 
