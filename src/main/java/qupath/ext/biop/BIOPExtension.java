@@ -29,7 +29,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
     public void installExtension(QuPathGUI qupath) {
         qupath.installCommand("BIOP>Display>Apply Display Settings", new ApplyDisplaySettingsCommand(qupath));
 
-        BIOPScripts.install(qupath);
+        //BIOPScripts.install(qupath);
     }
 
     @Override
@@ -57,6 +57,8 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
      * Install all scripts that the BIOP places in the Resources/scripts folder
      * @author Olivier Burri
      */
+
+    /* not used for now
     public static class BIOPScripts {
 
         private static void install(QuPathGUI qupath) {
@@ -110,6 +112,5 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
             qupath.getScriptEditor().showScript("", script);
         }
 
-
-
+     */
 }
