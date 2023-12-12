@@ -26,7 +26,7 @@ ext.qupathVersion = gradle.ext.qupathVersion
 
 description = 'QuPath extension containing utilitiy functions by the BIOP'
 
-version = "3.0.0"
+version = "3.0.1"
 
 dependencies {
 
