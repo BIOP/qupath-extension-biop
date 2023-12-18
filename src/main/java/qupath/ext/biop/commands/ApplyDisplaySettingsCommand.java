@@ -37,7 +37,6 @@ public class ApplyDisplaySettingsCommand implements Runnable {
     public void run() {
 
         String text = "Apply current channel names, colors and ranges to all images?\n(Will apply on images with the same image type and number of channels)";
-        text += "\nNOTE: this will only work if you also change the channel names!";
         if (!Dialogs.showConfirmDialog("Apply Display Settings to Project", text))
             return;
 
@@ -54,7 +53,7 @@ public class ApplyDisplaySettingsCommand implements Runnable {
                 .filter(v -> v.getImageData() == currentImageData)
                 .findFirst()
                 .orElse(null);
-        ImageDisplay display = null;
+        ImageDisplay display;
         if( viewer == null) {
             display = new ImageDisplay();
             try {
@@ -63,7 +62,7 @@ public class ApplyDisplaySettingsCommand implements Runnable {
                 throw new RuntimeException(e);
             }
         } else {
-            viewer.getImageDisplay();
+            display = viewer.getImageDisplay();
         }
         var available = display.availableChannels();
 
