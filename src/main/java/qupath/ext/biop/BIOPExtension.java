@@ -27,7 +27,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
 
     @Override
     public void installExtension(QuPathGUI qupath) {
-        qupath.installCommand("BIOP>Display>Apply Display Settings", new ApplyDisplaySettingsCommand(qupath));
+        qupath.installCommand("Extensions>BIOP>Apply Display Settings", new ApplyDisplaySettingsCommand(qupath));
 
         //BIOPScripts.install(qupath);
     }
