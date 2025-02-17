@@ -13,6 +13,7 @@ import qupath.lib.projects.Project;
 import qupath.lib.projects.ProjectImageEntry;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,7 +96,11 @@ public class ObjectClassifierValidation {
     }
 
     public void show() {
-        this.matches.showMatches( this.groundTruthClasses );
+        this.matches.showMatches( this.groundTruthClasses, null );
+    }
+
+    public void showAndSave(String path) {
+        this.matches.showMatches( this.groundTruthClasses, path );
     }
 
     private class MatchList {
@@ -141,7 +146,7 @@ public class ObjectClassifierValidation {
             return this.matchData.get(image).values().stream().mapToInt( t -> t.getOrDefault(gtClass, 0) ).sum() - getTP(image, gtClass);
         }
 
-        private void showMatches( List<PathClass> gtClasses ) {
+        private void showMatches( List<PathClass> gtClasses, String path ) {
             ResultsTable rt = new ResultsTable();
             rt.setValue("", 0, "");
             for (int i = 0; i < gtClasses.size(); i++) {
@@ -164,6 +169,13 @@ public class ObjectClassifierValidation {
                 });
             }
             rt.show( classifier.toString() + " - Matches" );
+            if(path != null && !path.isEmpty()) {
+                try {
+                    rt.save(path + File.separator + classifier.toString() + " - Matches.csv");
+                }catch(Exception e){
+                    logger.error("Cannot save the ResultsTable '{} - Matches' in {}", classifier.toString(), path);
+                }
+            }
 
             // Make a table for each image to contain all the fancy calculations
             ResultsTable perImage = new ResultsTable();
@@ -192,7 +204,15 @@ public class ObjectClassifierValidation {
                 perImage.addValue("Recall", recall);
                 perImage.addValue("F1 Score", f1);
             });
+
             perImage.show( classifier.toString() + " - Per Image");
+            if(path != null && !path.isEmpty()) {
+                try {
+                    perImage.save(path + File.separator + classifier.toString() + " - Per Image.csv");
+                }catch(Exception e){
+                    logger.error("Cannot save the ResultsTable '{} - Per Image' in {}", classifier.toString(), path);
+                }
+            }
         }
     }
 }
