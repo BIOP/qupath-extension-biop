@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"qupath.ext.biop"},{"l":"qupath.ext.biop.commands"},{"l":"qupath.ext.biop.utils"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"qupath.ext.biop"},{"l":"qupath.ext.biop.commands"},{"l":"qupath.ext.biop.ml"},{"l":"qupath.ext.biop.utils"}];updateSearchResults();
