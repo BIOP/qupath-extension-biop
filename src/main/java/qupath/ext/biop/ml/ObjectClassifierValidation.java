@@ -39,8 +39,8 @@ public class ObjectClassifierValidation {
         this.classifier = classifier;
         List<ProjectImageEntry<BufferedImage>> selectedEntries = project.getImageList().stream()
                 .filter(entry -> {
-                    if (entry.getMetadataMap().containsKey(metadataKeyFilter)) {
-                        return entry.getMetadataMap().get(metadataKeyFilter).equals(metadataValueFilter);
+                    if (entry.getMetadata().containsKey(metadataKeyFilter)) {
+                        return entry.getMetadata().get(metadataKeyFilter).equals(metadataValueFilter);
                     }
                     return false;
                 }).collect(Collectors.toList());

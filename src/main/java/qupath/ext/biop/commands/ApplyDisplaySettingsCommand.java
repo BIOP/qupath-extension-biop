@@ -62,7 +62,8 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
 
         // Build a simple GUI
-        Label labInfo = new Label("Apply channel names, colors and ranges from this image to all images?\n(Will apply to images with the same image type and number of channels)");
+        Label labInfo = new Label("Apply channel names, colors and ranges from this image to all images?\n" +
+                "(Will apply to images with the same image type and number of channels)");
         labInfo.setWrapText(false);
 
         Label labProcessing = new Label("");
@@ -115,7 +116,8 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
         stage.setOnCloseRequest(event -> {
             if( isRunningProperty.get()) {
-                Dialogs.showErrorNotification("Display settings command canceled", "Apply display settings command canceled while running.");
+                Dialogs.showErrorNotification("Display settings command canceled",
+                        "Apply display settings command canceled while running.");
                 cancelProperty.set(true);
             }
             stage.close();
@@ -227,7 +229,8 @@ public class ApplyDisplaySettingsCommand implements Runnable {
 
                         // Update the thumbnail. As this is related to the viewer display settings we might need to create a new viewer?
                         if (doThumbnails.get()) {
-                            QuPathViewerPlus tempViewer = new QuPathViewerPlus(qupath.getImageRegionStore(), new OverlayOptions(), new ViewerPlusDisplayOptions());
+                            QuPathViewerPlus tempViewer = new QuPathViewerPlus(qupath.getImageRegionStore(),
+                                    new OverlayOptions(), new ViewerPlusDisplayOptions());
                             tempViewer.setImageData(imageData);
                             BufferedImage thumbnail = tempViewer.getRGBThumbnail();
                             entry.setThumbnail(thumbnail);
@@ -260,7 +263,8 @@ public class ApplyDisplaySettingsCommand implements Runnable {
                 logger.error(e.getMessage(), e);
             }
 
-            Dialogs.showInfoNotification("Applied settings to "+nProcessed.get() +" images", ""+nIgnored.get()+" images were ignored due to either wrong image type or channel number");
+            Dialogs.showInfoNotification("Applied settings to "+nProcessed.get() +" images",
+                    nIgnored.get()+" images were ignored due to either wrong image type or channel number");
             isRunningProperty.set(false);
 
         });
