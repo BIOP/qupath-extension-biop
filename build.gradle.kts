@@ -1,82 +1,20 @@
 plugins {
-    id("java-library")
     id("maven-publish")
-    id("qupath.extension-conventions")
-    id("qupath.javafx-conventions")
+    // QuPath Gradle extension convention plugin
+    id("qupath-conventions")
 }
 
-repositories {
-    // Use this only for local development!
-    mavenCentral()
-    maven{
-        url = uri("https://maven.scijava.org/content/repositories/releases")
-    }
-    maven{
-        url = uri("https://maven.scijava.org/content/repositories/ome-releases")
-    }
+qupathExtension {
+    name = "qupath-extension-biop"
+    group = "ch.epfl.biop"
+    version = "3.2.1-SNAPSHOT"
+    description = "QuPath extension containing utilitiy functions by the BIOP"
+    automaticModule = "qupath.ext.biop"
 }
-
-group = "ch.epfl.biop"
-version = "3.2.1-SNAPSHOT"
-description = "QuPath extension containing utilitiy functions by the BIOP"
-
-var archiveBaseName = "qupath-extension-biop"
-var moduleName ="qupath.extension.biop"
 
 dependencies {
     implementation(libs.qupath.fxtras)
-    implementation(libs.bundles.logging)
-
-}
-
-tasks.withType<ProcessResources> {
-    from ("${projectDir}/LICENSE") {
-        into("META-INF/licenses/")
-    }
-}
-
-tasks.register<Sync>("copyResources") {
-    description = "Copy dependencies into the build directory for use elsewhere"
-    group = "QuPath"
-    from(configurations.default)
-    into("build/libs")
-}
-
-/*
- * Ensure Java 21 compatibility
- */
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-    if (project.properties["sources"] != null)
-        withSourcesJar()
-    if (project.properties["javadocs"] != null)
-        withJavadocJar()
-}
-
-
-/*
- * Adding manifest information
- */
-tasks {
-    withType<Jar> {
-        manifest {
-            attributes["Implementation-Title"] = project.name
-            attributes["Automatic-Module-Name"] = "${project.group}.$moduleName"
-        }
-    }
-}
-
-/*
- * Create javadocs for all modules/packages in one place.
- * Use -PstrictJavadoc=true to fail on error with doclint (which is rather strict).
- */
-val strictJavadoc = findProperty("strictJavadoc")
-if (strictJavadoc == false) {
-    tasks.withType<Javadoc> {
-        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
-    }
+    implementation(libs.qupath.gui.fx)
 }
 
 tasks.withType<Javadoc> {
@@ -90,10 +28,6 @@ tasks.withType<Javadoc> {
  */
 tasks.withType<org.gradle.jvm.tasks.Jar> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
 }
 
 
@@ -113,7 +47,6 @@ publishing {
 
     publications {
         create<MavenPublication>("mavenJava") {
-            groupId = "ch.epfl.biop"
             from(components["java"])
             pom {
                 licenses {
