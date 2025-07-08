@@ -8,7 +8,7 @@ qupathExtension {
     name = "qupath-extension-biop"
     group = "ch.epfl.biop"
     version = "3.2.1-SNAPSHOT"
-    description = "QuPath extension containing utilitiy functions by the BIOP"
+    description = "QuPath extension containing utility functions by the BIOP"
     automaticModule = "qupath.ext.biop"
 }
 
