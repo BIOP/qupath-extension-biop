@@ -72,10 +72,10 @@ public class Results {
             results.addValue("Image Name", rawImageName);
 
             // Check if image has associated metadata and add it as columns
-            if (entry.getMetadataKeys().size() > 0) {
-                Collection<String> keys = entry.getMetadataKeys();
+            if (!entry.getMetadata().isEmpty()) {
+                Collection<String> keys = entry.getMetadata().keySet();
                 for (String key : keys) {
-                    results.addValue("Metadata_" + key, entry.getMetadataValue(key));
+                    results.addValue("Metadata_" + key, entry.getMetadata().get(key));
                 }
             }
 
@@ -164,12 +164,12 @@ public class Results {
                     // Append all columns
                     for (int c = 0; c <= metadata.getLastColumn(); c++) {
                         // Exclude columns without names or the Image Name Column
-                        if (metadata.getColumnHeading(c) != "" && metadata.getColumnHeading(c) != "Image Name") {
+                        if (!metadata.getColumnHeading(c).isEmpty() && !metadata.getColumnHeading(c).equals("Image Name")) {
                             String key = metadata.getColumnHeading(c);
                             String value = metadata.getStringValue(c, i);
                             // If the value is empty, then do not add it
-                            if (!value.equals(""))
-                                image.putMetadataValue(key, value);
+                            if (!value.isEmpty())
+                                image.getMetadata().put(key, value);
                         }
                     }
                 }
