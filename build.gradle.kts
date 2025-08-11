@@ -7,7 +7,7 @@ plugins {
 qupathExtension {
     name = "qupath-extension-biop"
     group = "ch.epfl.biop"
-    version = "3.3.1-SNAPSHOT"
+    version = "3.4.0"
     description = "QuPath extension containing utility functions by the BIOP"
     automaticModule = "qupath.ext.biop"
 }
