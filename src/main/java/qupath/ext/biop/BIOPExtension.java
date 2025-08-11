@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +28,11 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
 
     @Override
     public void installExtension(QuPathGUI qupath) {
+        // initialize command
         qupath.installCommand("Extensions>BIOP>Apply Display Settings", new ApplyDisplaySettingsCommand(qupath));
 
-        //BIOPScripts.install(qupath);
+        // initialize scripts
+        BIOPScripts.install(qupath);
     }
 
     @Override
@@ -57,8 +60,6 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
      * Install all scripts that the BIOP places in the Resources/scripts folder
      * @author Olivier Burri
      */
-
-    /* not used for now
     public static class BIOPScripts {
 
         private static void install(QuPathGUI qupath) {
@@ -78,7 +79,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
                     } catch (IOException e) {
                         logger.error( e.getLocalizedMessage() );
                     }
-                    if (scriptContent != null) {
+                    if (!scriptContent.equals("null")) {
                         String finalScriptContent = scriptContent;
                         MenuTools.addMenuItems(qupath.getMenu(menu, true),
                                 new Action( name, e -> openScript(qupath, finalScriptContent)));
@@ -93,24 +94,26 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
             URI uri = BIOPExtension.class.getResource("/scripts").toURI();
             Path myPath;
             if (uri.getScheme().equals("jar")) {
-                FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
-                myPath = fileSystem.getPath("/scripts");
+                try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap())) {
+                    myPath = fileSystem.getPath("/scripts");
+                }
             } else {
                 myPath = Paths.get(uri);
             }
-            Stream<Path> walk = Files.walk(myPath, 10);
-            return walk.filter(p-> p.toString().endsWith("groovy")).sorted().collect(Collectors.toList());
+            List<Path> filteredWalk = new ArrayList<>();
+            try(Stream<Path> walk = Files.walk(myPath, 10)) {
+                filteredWalk = walk.filter(p -> p.toString().endsWith("groovy")).sorted().collect(Collectors.toList());
             }
+            return filteredWalk;
         }
+    }
 
-        private static void openScript (QuPathGUI qupath, String script){
-            var editor = qupath.getScriptEditor();
-            if (editor == null) {
-                logger.error("No script editor is available!");
-                return;
-            }
-            qupath.getScriptEditor().showScript("", script);
+    private static void openScript (QuPathGUI qupath, String script){
+        var editor = qupath.getScriptEditor();
+        if (editor == null) {
+            logger.error("No script editor is available!");
+            return;
         }
-
-     */
+        qupath.getScriptEditor().showScript("", script);
+    }
 }
