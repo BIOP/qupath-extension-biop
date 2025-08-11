@@ -94,17 +94,13 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
             URI uri = BIOPExtension.class.getResource("/scripts").toURI();
             Path myPath;
             if (uri.getScheme().equals("jar")) {
-                try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap())) {
-                    myPath = fileSystem.getPath("/scripts");
-                }
+                FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+                myPath = fileSystem.getPath("/scripts");
             } else {
                 myPath = Paths.get(uri);
             }
-            List<Path> filteredWalk = new ArrayList<>();
-            try(Stream<Path> walk = Files.walk(myPath, 10)) {
-                filteredWalk = walk.filter(p -> p.toString().endsWith("groovy")).sorted().collect(Collectors.toList());
-            }
-            return filteredWalk;
+            Stream<Path> walk = Files.walk(myPath, 10);
+            return walk.filter(p -> p.toString().endsWith("groovy")).sorted().collect(Collectors.toList());
         }
     }
 
