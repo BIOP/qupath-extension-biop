@@ -19,6 +19,7 @@ This repo adds some tools developed at the BIOP to ease scripting and assist use
 - Search for `QuPath BIOP extension` and click on the green button
 - Select the latest version
 - Click on `Install`
+- Restart QuPath
 
 > Note: If you need to update the extension, click on the ⚙️ button and select the latest version to install.
 
