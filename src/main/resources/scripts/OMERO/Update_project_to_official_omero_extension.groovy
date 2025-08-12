@@ -1,7 +1,7 @@
 /**
  * Update the project.qpproj file to migrate from qupath-extension-biop-omero to
  * qupath-extension-omero standards
- * 
+ *
  * Step by step tutorial:
  * 1. Copy the entire project folder to update (just to save the current state, in case something happens)
  * 2. Open QuPath, but DON'T OPEN THE PROJECT IN QUPATH
@@ -11,14 +11,14 @@
  * 6. Change the "newWebServerHost" variable with the omero webclient address (can be the same or not)
  * 7. Change the "oldOmeroServerPort" variable with the omero server port (the one required for qupath-extension-biop-omero)
  * 8. Run the script
- * 
+ *
  * NOTE: For MAC users, if your project is located on a server, then the path should begin with /Volumes/...
- * 
+ *
  * @author Remy Dornier, Nicolas Chiaruttini, Claude.ai
  * @date 2025.06.30
  * Last tested on QuPath-0.6.0
- * 
- */ 
+ *
+ */
 
 // imports
 import java.nio.charset.StandardCharsets
@@ -27,12 +27,12 @@ import java.nio.file.StandardCopyOption
 import com.google.gson.*
 
 /*************************************************************
- * 
+ *
  ****************** Variables to change ******************
- * 
+ *
  ***********************************************************/
 // The omero project path created using the qupath-extension-biop-omero
-def oldOmeroProjectPath = "F:/IAGitLab/yllza.jasiqi_UPDANGELO/aligncycles/qupath_project_converted/project.qpproj"
+def oldOmeroProjectPath = "F:/.../project.qpproj"
 // omero host pointing to the omero server
 def oldIceServerHost = "omero-server.epfl.ch"
 // omero host pointing to the webclient
@@ -41,9 +41,9 @@ def newWebServerHost = "omero.epfl.ch"
 def oldOmeroServerPort = 4064
 
 /*************************************************************
- * 
+ *
  ****************** Beginning of the script ******************
- * 
+ *
  ***********************************************************/
 
 def qpprojFile = new File(oldOmeroProjectPath)
@@ -75,30 +75,40 @@ def migratedCount = 0
 
 // Recursive function to process nested serverBuilders
 def processServerBuilder = null
-processServerBuilder = { jsonElement ->
+processServerBuilder = { jsonElement, depth = 0 ->
+    def indent = "  " * depth
+
     if (jsonElement.isJsonObject()) {
         def jsonObj = jsonElement.getAsJsonObject()
-        
+
+        // Debug: print what we're processing
+        if (jsonObj.has("builderType")) {
+            println "${indent}Processing object with builderType: ${jsonObj.get('builderType').getAsString()}"
+        }
+        if (jsonObj.has("providerClassName")) {
+            println "${indent}Found providerClassName: ${jsonObj.get('providerClassName').getAsString()}"
+        }
+
         // Check if this object IS a serverBuilder that needs migration
         if (jsonObj.has("providerClassName")) {
             def providerClassName = jsonObj.get("providerClassName").getAsString()
             if (providerClassName.equals(oldServerProvider)) {
-                println "    Found nested serverBuilder to migrate"
-                
+                println "${indent}*** MIGRATING serverBuilder ***"
+
                 // Update provider class name
                 jsonObj.addProperty("providerClassName", newServerProvider)
-                
+
                 // Update URI if it contains the old server host
                 if (jsonObj.has("uri")) {
                     def oldUri = jsonObj.get("uri").getAsString()
                     def newUri = oldUri.replace(oldIceServerHost, newWebServerHost)
                     jsonObj.addProperty("uri", newUri)
-                    
+
                     if (!oldUri.equals(newUri)) {
-                        println "      Updated URI: ${oldUri} -> ${newUri}"
+                        println "${indent}    Updated URI: ${oldUri} -> ${newUri}"
                     }
                 }
-                
+
                 // Add new arguments
                 def args = new JsonArray()
                 args.add("--serverAddress")
@@ -107,22 +117,40 @@ processServerBuilder = { jsonElement ->
                 args.add(String.valueOf(oldOmeroServerPort))
                 args.add("--pixelAPI")
                 args.add("Ice")
-                
+
                 jsonObj.add("args", args)
                 migratedCount++
+                println "${indent}    Migration completed!"
+            } else {
+                println "${indent}Skipping providerClassName: ${providerClassName}"
             }
         }
-        
+
         // Now recursively process ALL properties of this object
         jsonObj.entrySet().each { entry ->
+            def key = entry.key
             def value = entry.value
-            processServerBuilder(value)
+            println "${indent}Recursing into property: ${key}"
+            processServerBuilder(value, depth + 1)
         }
-        
+
     } else if (jsonElement.isJsonArray()) {
         def jsonArray = jsonElement.getAsJsonArray()
-        jsonArray.each { arrayElement ->
-            processServerBuilder(arrayElement)
+        println "${indent}Processing array with ${jsonArray.size()} elements"
+        jsonArray.eachWithIndex { arrayElement, index ->
+            println "${indent}Processing array element ${index}"
+            processServerBuilder(arrayElement, depth + 1)
+        }
+    } else {
+        // Primitive value - nothing to process
+        if (jsonElement.isJsonPrimitive()) {
+            def primitive = jsonElement.getAsJsonPrimitive()
+            if (primitive.isString()) {
+                def str = primitive.getAsString()
+                if (str.length() < 100) { // Only log short strings to avoid spam
+                    println "${indent}Primitive string: ${str}"
+                }
+            }
         }
     }
 }
@@ -132,41 +160,42 @@ try {
     def backupFile = new File(qpprojFile.parent, "project.qproj.backup_before_convertion")
     Files.copy(qpprojFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
     println "Backup created: ${backupFile.absolutePath}"
-    
+
     // Read and parse JSON using Gson
     def gson = new Gson()
     String content = qpprojFile.getText(StandardCharsets.UTF_8.toString())
     def jsonElement = JsonParser.parseString(content)
     def rootObject = jsonElement.getAsJsonObject()
-    
+
     // Track migration statistics
     int totalImages = 0
-    
+
     if (rootObject.has("images") && rootObject.get("images").isJsonArray()) {
         def imagesArray = rootObject.get("images").getAsJsonArray()
         totalImages = imagesArray.size()
-        
+
         println "Found ${totalImages} images to process"
-        
+
         // Process each image and all its nested serverBuilders
         for (int i = 0; i < imagesArray.size(); i++) {
             println "  Processing image ${i + 1}/${totalImages}"
             def imageElement = imagesArray.get(i)
-            processServerBuilder(imageElement)
+            processServerBuilder(imageElement, 0)
+            println "  Completed image ${i + 1}/${totalImages}\n"
         }
     } else {
         println "No images found in project file"
     }
-    
+
     // Save the updated file with pretty printing
     def prettyGson = new GsonBuilder().setPrettyPrinting().create()
     try (BufferedWriter buffer = new BufferedWriter(
             new OutputStreamWriter(
-                new FileOutputStream(qpprojFile), 
-                StandardCharsets.UTF_8))) {
+                    new FileOutputStream(qpprojFile),
+                    StandardCharsets.UTF_8))) {
         buffer.write(prettyGson.toJson(jsonElement))
     }
-    
+
     // Print migration summary
     println "\n" + "="*50
     println "MIGRATION SUMMARY"
@@ -174,7 +203,7 @@ try {
     println "Total images processed: ${totalImages}"
     println "Total serverBuilders migrated: ${migratedCount}"
     println "Backup file: ${backupFile.absolutePath}"
-    
+
     if (migratedCount > 0) {
         println "\n✓ Migration completed successfully!"
         println "  ${migratedCount} serverBuilder(s) were updated across all nesting levels"
@@ -182,7 +211,7 @@ try {
         println "\n⚠ No serverBuilders found that needed migration."
         println "  Either the project was already migrated or uses different providers."
     }
-    
+
 } catch (Exception e) {
     println "FATAL ERROR during migration: ${e.message}"
     e.printStackTrace()
