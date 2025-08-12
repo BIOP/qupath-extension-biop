@@ -2,6 +2,11 @@
 
 This repo adds some tools developed at the BIOP to ease scripting and assist user project in Qupath
 
+> [!WARNING]
+> Versions from v3.3.0 or above of this extension **will only work on QuPath 0.6.0 or later**. Please update QuPath to the latest version. 
+> In case you are stuck with QuPath v0.5.1, [the last release to work is v3.2.0](https://github.com/BIOP/qupath-extension-biop/releases/tag/v3.2.0)
+
+
 ## Installing
 
 Download the latest `qupath-extension-biop-[version].jar` file
