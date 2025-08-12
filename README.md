@@ -8,7 +8,22 @@ This repo adds some tools developed at the BIOP to ease scripting and assist use
 
 
 ## Installing
+### On QuPath 0.6.x
 
+- Open QuPath
+- Go under `Extensions -> Manage extensions`
+- Expand the `QuPath-BIOP catalog`
+
+> Note: if you don't have the **QuPath-BIOP-catalog** installed, please follow the [catalog installation steps](https://github.com/BIOP/qupath-biop-catalog?tab=readme-ov-file#installation)
+
+- Search for `QuPath BIOP extension` and click on the green button
+- Select the latest version
+- Click on `Install`
+
+> Note: If you need to update the extension, click on the ⚙️ button and select the latest version to install.
+
+
+### On QuPath 0.5.x
 Download the latest `qupath-extension-biop-[version].jar` file
 from [releases](https://github.com/biop/qupath-extension-biop/releases) and drag it onto the main QuPath window.
 
