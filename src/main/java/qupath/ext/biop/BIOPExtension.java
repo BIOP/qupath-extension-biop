@@ -71,7 +71,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
                     // Make underscores into spaces
                     String name = fileName.substring(0, fileName.lastIndexOf('.')).replaceAll("_", " ");
                     // Use the file's path as a menu path. Need to remove 'scripts' from the path
-                    String menu = "Extensions>BIOP scripts>" + script.getParent().toString().replace("/scripts/", "").replaceAll("[/\\\\]+", ">");
+                    String menu = "Extensions>BIOP>scripts>" + script.getParent().toString().replace("/scripts/", "").replaceAll("[/\\\\]+", ">");
                     String scriptContent = "null";
                     try {
                         scriptContent = Files.readString(script, StandardCharsets.UTF_8);
