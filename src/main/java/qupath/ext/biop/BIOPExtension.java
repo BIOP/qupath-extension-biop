@@ -71,7 +71,7 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
                     // Make underscores into spaces
                     String name = fileName.substring(0, fileName.lastIndexOf('.')).replaceAll("_", " ");
                     // Use the file's path as a menu path. Need to remove 'scripts' from the path
-                    String menu = "Extensions>BIOP>scripts>" + script.getParent().toString().replace("/scripts/", "").replaceAll("[/\\\\]+", ">");
+                    String menu = "Extensions>BIOP>scripts>" + script.getParent().toString().replace("/biop-scripts/", "").replaceAll("[/\\\\]+", ">");
                     String scriptContent = "null";
                     try {
                         scriptContent = Files.readString(script, StandardCharsets.UTF_8);
@@ -90,11 +90,11 @@ public class BIOPExtension implements QuPathExtension, GitHubProject {
         }
 
         private static List<Path> getAllGroovyScripts() throws IOException, URISyntaxException {
-            URI uri = BIOPExtension.class.getResource("/scripts").toURI();
+            URI uri = BIOPExtension.class.getResource("/biop-scripts").toURI();
             Path myPath;
             if (uri.getScheme().equals("jar")) {
                 FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
-                myPath = fileSystem.getPath("/scripts");
+                myPath = fileSystem.getPath("/biop-scripts");
             } else {
                 myPath = Paths.get(uri);
             }
