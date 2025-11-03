@@ -91,7 +91,7 @@ public class Channels {
     /**
      * Return the current channel names, colors and minMax displays to a list
      * NOTE: Channels that are not currently selected will not be sent
-     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File)} or {@link Channels#setChannelSettings(List)}
      */
     public static List<Channel> getCurrentChannelSettings() {
         // This will only work and do things on fluorescent data
@@ -127,7 +127,7 @@ public class Channels {
      * <pre>1, One channel, #0300ff, 0, 100
      * 3, Another channel, #ff3300, 10, 1200</pre>
      * @param settingsString a manually created String
-     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File)} or {@link Channels#setChannelSettings(List)}
      */
     public static List<Channel> readChannelSettings(String settingsString) {
         List<Channel> channels = new ArrayList<>();
@@ -144,7 +144,7 @@ public class Channels {
      * Read the settings from a simple text file, generally made using {@link Channels#writeChannelSettings(List, File)}
      * but could also be made manually
      * @param settingsFile the file with the settings.
-     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File) or {@link Channels#setChannelSettings(List)}}
+     * @return a list that can be used with {@link Channels#writeChannelSettings(List, File)} or {@link Channels#setChannelSettings(List)}
      * @throws FileNotFoundException in case the file does not exist
      */
     public static List<Channel> readChannelSettings(File settingsFile) throws FileNotFoundException {
