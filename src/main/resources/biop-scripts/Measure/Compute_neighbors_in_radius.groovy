@@ -8,7 +8,7 @@
  * date: 2026-02-11
  * version: 1.0.0
  * 
- * Last tested on QuPath 0.6.0
+ * Last tested on QuPath 0.7.0
  * 
  */
 

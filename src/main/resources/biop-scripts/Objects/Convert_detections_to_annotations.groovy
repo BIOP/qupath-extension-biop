@@ -3,7 +3,7 @@
  * Most exporters we have only export annotations and not detections
  * 
  * @author Olivier Burri
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
 
 

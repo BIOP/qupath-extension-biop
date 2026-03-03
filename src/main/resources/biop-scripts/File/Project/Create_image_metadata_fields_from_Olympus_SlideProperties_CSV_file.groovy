@@ -6,7 +6,7 @@
  * 
  * @author Olivier Burri
  * @date 2022.11.03
- * Last tested in QuPath-0.6.0
+ * Last tested in QuPath-0.7.0
  */
  
  

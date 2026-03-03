@@ -3,7 +3,7 @@
  * 
  * @author Olivier Burri
  * @date 2022.11.03
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
 
 // Image from which to transfer all annotations from

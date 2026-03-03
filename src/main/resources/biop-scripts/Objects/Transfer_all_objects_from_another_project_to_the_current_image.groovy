@@ -5,7 +5,7 @@
  *
  * @author Olivier Burri
  * @date 2022.11.03
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
  
 // Remove objects from the active ImageEntry or keep it as is, and just add?

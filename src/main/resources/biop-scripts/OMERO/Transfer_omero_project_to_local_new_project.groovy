@@ -18,8 +18,8 @@
  *
  * @author Remy Dornier
  * @date 2023-07-10
- * Last tested on QuPath-0.6.0
- * version v4.0
+ * Last tested on QuPath-0.7.0
+ * version v4.1
  * 
  * REQUIRED DEPENDENCY : omero-ij.5.8.6-all.jar (previous versions won't work to download vsi files)
  * 
@@ -32,6 +32,7 @@
  * 2025.02.17 : update dependencies to omero-ij.5.8.6-all.jar --v3.0
  * 2025.06.30 : Update for QuPath-0.6.0 --v4.0
  * 2025.06.30 : Migration towards qupath-extension-omero --v4.0
+ * 2026.03.03 : Update for QuPath-0.7.0 -v4.1
  */
  
  
@@ -423,11 +424,6 @@ import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.model.ExperimenterData;
 import java.util.stream.Collectors
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -435,10 +431,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption
 
 import qupath.lib.common.GeneralTools;
-import qupath.lib.gui.QuPathGUI;
-import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.prefs.PathPrefs;
-import qupath.lib.gui.tools.PaneTools;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerBuilder;
 import qupath.lib.images.servers.ImageServers;

@@ -13,7 +13,7 @@
  *
  * @author Olivier Burri & Remy Dornier
  * @date 2023-04-05
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  * 
  * History 
  *  - 2023.07.05 : close the imageServer to release OMERO ressources
