@@ -5,7 +5,7 @@
  *
  * @author Olivier Burri
  * Date: 2020.10.29
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
  
 import ch.epfl.biop.qupath.utils.*

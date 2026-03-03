@@ -16,7 +16,7 @@
  *
  * @author Remy Dornier, Nicolas Chiaruttini, Claude.ai
  * @date 2025.06.30
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  *
  */
 

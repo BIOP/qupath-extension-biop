@@ -7,7 +7,7 @@ import org.locationtech.jts.geom.util.AffineTransformation
  * 
  * @author Remy Dornier (from https://forum.image.sc/t/qupath-rotate-multiple-annotations/31547/4)
  * @date 2023.04.06
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */ 
 
 def rotation_angle = 180 // in degree

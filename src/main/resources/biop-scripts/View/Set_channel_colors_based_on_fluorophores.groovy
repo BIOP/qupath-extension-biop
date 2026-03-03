@@ -1,3 +1,10 @@
+/*
+ * Update the thumbnail of the current open image
+ *
+ * @author Olivier Burri
+ * Last tested on QuPath-0.7.0
+ */
+
 def fluorophores = ["DAPI":"#334db3", "Cy5":"#ff00ff", "TRITC":"#ff000", "FITC":"#00ffff", "Cy7":"#ffff00"]
 
 def channels = getCurrentViewer().getImageDisplay().availableChannels()

@@ -4,7 +4,7 @@
  *
  * @author Olivier Burri
  * Date: 2022.12.21
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
 
 def channels = getCurrentViewer().getImageDisplay().availableChannels()

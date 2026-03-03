@@ -3,7 +3,7 @@
  * 
  * @author Olivier Burri
  * @date 2022.11.09
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
  
 def annotations = getAnnotationObjects()

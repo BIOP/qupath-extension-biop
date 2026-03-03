@@ -11,7 +11,7 @@
  *
  * @author Olivier Burri
  * Date: 2020.09.15
- * Last tested on QuPath-0.6.0
+ * Last tested on QuPath-0.7.0
  */
  
 ////// Parameters for export //////

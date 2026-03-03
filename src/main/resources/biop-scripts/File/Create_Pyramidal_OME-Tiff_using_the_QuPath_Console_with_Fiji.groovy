@@ -29,7 +29,7 @@ GParsPool.withPool(6) {
 		
         println file
 		
-        def cmd = "C:/QuPath-0.6.0/QuPath-0.6.0 (console).exe"
+        def cmd = "C:/QuPath-0.7.0/QuPath-0.7.0 (console).exe"
         def outputFile = new File (folder, file.getName() + "_info.txt")
         def pb = new ProcessBuilder(cmd, "convert-ome", file.getAbsolutePath(), new File( convertedFolder, file.getName()+".ome.tiff").getAbsolutePath(), "-y", "2.0", "-p", "-t", "1")
         				.redirectErrorStream(true)

@@ -8,7 +8,7 @@
  * @author: Olivier Burri
  * @date: 2020.07.10
  * Last modification: Simplified code and made it compatible with QuPath 0.2.1
- * Last tested on QuPath0.6.0
+ * Last tested on QuPath-0.7.0
  */
 
 def project = getProject()
